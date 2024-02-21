@@ -1,4 +1,6 @@
-def extract_embedding(df):
+import numpy as np
+
+def extract_embedding(sentence):
     """
     Extract the embedding of the token at the given index.
 
@@ -7,11 +9,8 @@ def extract_embedding(df):
     sentence (dict): The sentence object
     index (int): The index of the token whose embedding is to be extracted
     """
-    print("It works!")
+    features = []
+    for word in sentence:
+        features.append(np.array([0.0] * 300))
 
-    embeddings = []
-
-    for row in df:
-        embedding = "poop"
-        embeddings.append(embedding)
-    return embeddings
+    return features
