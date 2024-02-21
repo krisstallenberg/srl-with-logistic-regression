@@ -2,13 +2,19 @@
 import time
 import sys
 sys.path.append('feature_extraction')
-import extract_embedding
+from extract_embedding import extract_embedding
 import pandas as pd
 
 
-def extract_features(dataframe):
-    # dataframe['feature']['pos'] = extract_embedding(dataframe)
-    pass
+def extract_features(data):
+    for sentence in data:
+        
+        # For every extraction function, add these three lines, adjust the feature name and the function call accordingly ;)
+        embeddings = extract_embedding(sentence)
+        for token, embedding in zip(sentence, embeddings):
+            token['features']['embedding'] = embedding
+
+    return data
 
 def train_model(data):
     pass
@@ -25,79 +31,28 @@ def preprocess_data(file_path):
     data (str): The data to be preprocessed
     """
 
-    # # Assuming 'path_train' is the path to your CoNLL-U file
-    # with open(file_path, "r", encoding="utf-8") as file:
-    #     sentences = file.read().strip().split('\n\n')
-
-    # dfs = []  # This will store a DataFrame for each sentence
-
-    # for sentence in sentences:
-    #     lines = sentence.split('\n')
-    #     sentence_data = []  # This will hold data for the current sentence
-    #     for line in lines:
-    #         if line.startswith('#'):
-    #             continue  # Skip comment lines
-    #         fields = line.split('\t')
-    #         sentence_data.append(fields)
-    #     # Convert sentence data to a DataFrame
-    #     if sentence_data:
-    #         df = pd.DataFrame(sentence_data)
-    #         dfs.append(df)
-
-    # dupl_sents = []
-    # for df in dfs:
-    #     preds=[]
-    #     preds = [df.iloc[i][10] if '.' not in str(df.iloc[i][0]) else '_' for i in range(len(df))]
-    #     count_of_pred=0
-    #     for i, pred in enumerate(preds):
-    #         if pred == '_':
-    #             continue
-    #         else:
-    #             count_of_pred+=1
-    #             arg_col_name = int(10 + count_of_pred)
-    #             new_pred_list = ['_'] * len(preds)
-    #             new_pred_list[i] = pred 
-    #             df_v=pd.DataFrame()
-    #             df_v=df.copy()
-                
-    #             if arg_col_name in df.columns:
-    #                 columns_to_keep = [int(i) for i in range(0, 10)] + [arg_col_name]
-    #                 df_v = df[columns_to_keep].copy()
-    #                 df_v.insert(10, 10, new_pred_list)
-    #                 df_v = df_v.set_axis(['ID','FORM','LEMMA','UPOS','XPOS','FEATURES','HEAD','DEPREL','DEPS','MISC','PRED','ARGS'], axis=1)
-    #                 if len(df_v.columns)!=12:
-    #                     print(df_v)
-    #             dupl_sents.append(df_v)
-
-    # indices_to_remove = [i for i, df in enumerate(dupl_sents) if 'ID' not in df.columns]
-    # for i in sorted(indices_to_remove, reverse=True):
-    #     dupl_sents.pop(i)
-        
-    # return dupl_sents
-
     sentences = []
+    sentence = []  # Initialize an empty list for the current sentence
     with open(file_path, 'r') as file:
-        current_tokens = []
-        sent_id = None
-        text = None
         for line in file:
-            if line.startswith('#'):
+            line = line.strip().split('\t')
+            if line[0].startswith('#'):
+                # If the line starts with '#', it's a comment, ignore it
                 continue
-            else:
-                if line.strip() == '':
-                    sentences.append(sentence)
-                    sentence = []
-                else:
-                    line = line.strip().split('\t')
-                    # Split the features into a dictionary
-                    features = dict()
-                    for feature in line[5].split('|'):
-                        key_value_pair = feature.split('=')
-                    # Check if the split result is valid (contains both key and value)
-                        if len(key_value_pair) == 2:
-                            key, value = key_value_pair
-                            features[key] = value 
-                    sentence.append({
+            elif line[0].strip() != '':
+                # Split the features string into a dictionary
+                features = dict()
+                for feature in line[5].split('|'):
+                    key_value_pair = feature.split('=')
+
+                    # Check if the split result is valid, if it is, add it to the dictionary
+                    if len(key_value_pair) == 2:
+                        key, value = key_value_pair
+                        features[key] = value 
+
+                # Create a token if its ID does not contain a period
+                if '.' not in line[0]:
+                    token = {
                         'id': line[0],
                         'form': line[1],
                         'lemma': line[2],
@@ -107,21 +62,49 @@ def preprocess_data(file_path):
                         'head': line[6],
                         'dependency_relation': line[7],
                         'dependency_graph': line[8],
-                        'miscellaneous': line[9]
-                    })
-        
-    return sentences
+                        'miscellaneous': line[9],
+                        'argument': line[10:]  # Store all remaining elements as arguments
+                    }
+                    # Append the token to the sentence
+                    sentence.append(token)
+
+            elif line[0].strip() == '':
+                # Append the completed sentence to the sentences list
+                sentences.append(sentence)
+                # Reset sentence for the next sentence
+                sentence = []
+
+    # Iterate over all sentences. Create copies of sentences for each argument
+    expanded_sentences = []
+    for sentence in sentences:
+        # Get the number of arguments for the first token
+        num_arguments = len(sentence[0]['argument'])
+        for arg_index in range(num_arguments):
+            sentence_copy = [token.copy() for token in sentence]
+            for token in sentence_copy:
+                token['argument'] = token['argument'][arg_index]
+            expanded_sentences.append(sentence_copy)
+
+    return expanded_sentences
 
 
 
 def print_process(process_name, start_time=None):
+    """
+    Print the process name and the elapsed time.
+
+    process_name (str): The name of the process
+    start_time (float): The start time of the process, for second call
+    """
+
+
     if start_time is None:
         print(f"{process_name.capitalize()}...")
         return time.time()
     else:
         end_time = time.time()
         elapsed_time = round(end_time - start_time, 1)
-        print(f"Successfully finished {process_name.lower()} in {elapsed_time} seconds!")
+        print(f"Successfully finished {process_name.lower()} in {elapsed_time} seconds!\n")
 
 def main():
     """
@@ -152,12 +135,17 @@ def main():
     extract_features(test_data)
     print_process("extracting features", start_time)
 
+    # This is just to show the structure of the data. Delete this later.
+    for sentence in dev_data[:2]:
+        for word in sentence:
+            for key, value in word.items():
+                print(f"{key}: {value}")
+            print("\n")
+
     # Train the model
     start_time = print_process("training")
     model = train_model(train_data)
     print_process("training", start_time)
-
-    print(dev_data[-1])
 
     # Infer the model
     start_time = print_process("inference")
