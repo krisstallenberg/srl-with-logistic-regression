@@ -26,9 +26,9 @@ def preprocess_data(file_path):
     """
     Extract features from the data and return a list of objects.
 
-    Returns a list of objects, where each object represents a sentence in the data.
+    Returns a list of objects, where each object represents one 'frame' in a sentence.
 
-    data (str): The data to be preprocessed
+    data (str): The file path to the data to be preprocessed.
     """
 
     sentences = []
@@ -51,7 +51,7 @@ def preprocess_data(file_path):
                         features[key] = value 
 
                 # Create a token if its ID does not contain a period
-                if '.' not in line[0]:
+                if '.' not in line[0] and len(line) > 10:
                     token = {
                         'id': line[0],
                         'form': line[1],
@@ -63,23 +63,27 @@ def preprocess_data(file_path):
                         'dependency_relation': line[7],
                         'dependency_graph': line[8],
                         'miscellaneous': line[9],
-                        'argument': line[10:]  # Store all remaining elements as arguments
+                        'predicate': line[10],
+                        'argument': line[11:]  # Store all remaining elements as arguments.
                     }
-                    # Append the token to the sentence
+                    # Append the token to the sentence.
                     sentence.append(token)
 
+            # A new line indicates the end of a sentence. 
             elif line[0].strip() == '':
-                # Append the completed sentence to the sentences list
+                # Append the completed sentence to the sentences list.
                 sentences.append(sentence)
-                # Reset sentence for the next sentence
+                # Reset sentence for the next sentence.
                 sentence = []
 
-    # Iterate over all sentences. Create copies of sentences for each argument
+    # Iterate over all sentences. Create copies of sentences for each predicate.
     expanded_sentences = []
     for sentence in sentences:
-        # Get the number of arguments for the first token
-        num_arguments = len(sentence[0]['argument'])
-        for arg_index in range(num_arguments):
+        # Count how many predicates are in the sentence.
+        num_predicates = len([token['predicate'] for token in sentence if token['predicate'] != '_'])
+        
+        # for every predicate, create a copy of the sentence and replace the argument with the argument at the current index.
+        for arg_index in range(num_predicates):
             sentence_copy = [token.copy() for token in sentence]
             for token in sentence_copy:
                 token['argument'] = token['argument'][arg_index]
@@ -134,13 +138,6 @@ def main():
     extract_features(train_data)
     extract_features(test_data)
     print_process("extracting features", start_time)
-
-    # This is just to show the structure of the data. Delete this later.
-    for sentence in dev_data[:2]:
-        for word in sentence:
-            for key, value in word.items():
-                print(f"{key}: {value}")
-            print("\n")
 
     # Train the model
     start_time = print_process("training")
