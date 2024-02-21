@@ -1,4 +1,4 @@
-def extract_embedding(df):
+def extract_embedding(sentence, index):
     """
     Extract the embedding of the token at the given index.
 
@@ -8,10 +8,4 @@ def extract_embedding(df):
     index (int): The index of the token whose embedding is to be extracted
     """
     print("It works!")
-
-    embeddings = []
-
-    for row in df:
-        embedding = "poop"
-        embeddings.append(embedding)
-    return embeddings
+    
