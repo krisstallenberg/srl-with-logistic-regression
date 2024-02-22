@@ -24,7 +24,7 @@ def find_dependency_path(token_id, sentence,pred_id ):
         if token is None:
             break
 
-        dep_path.insert(len(dep_path), f"{token['form']}({token['upos']})")
+        dep_path.insert(len(dep_path), f"{token['xpos']}")
         current_id = int(token['head'])
 
     return dep_path
