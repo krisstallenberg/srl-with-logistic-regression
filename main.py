@@ -1,4 +1,6 @@
 import time
+import json
+import argparse
 import sys
 import pandas as pd
 import gensim.downloader as api
@@ -185,6 +187,16 @@ def print_process(process_name, start_time=None):
         elapsed_time = round(end_time - start_time, 1)
         print(f"Successfully finished {process_name.lower()} in {elapsed_time} seconds!\n")
 
+import pickle
+
+def save_data(data, file_path):
+    with open(file_path.replace('.conllu', '.preprocessed.pkl'), 'wb') as pickle_file:
+        pickle.dump(data, pickle_file)
+
+def load_data(file_path):
+    with open(file_path.replace('.conllu', '.preprocessed.pkl'), 'rb') as pickle_file:
+        return pickle.load(pickle_file)
+
 def main():
     """
     Main function for Semantic Role Labeling (SRL).
@@ -194,31 +206,58 @@ def main():
     2. Train a model
     3. Evaluate the model
     """
+    # Parse command line arguments.
+    parser = argparse.ArgumentParser(description='Semantic Role Labeling (SRL) using the Universal PropBank dataset.')
+    parser.add_argument('--use-cached', action='store_true' , help='Use cached preprocessed files for training and inference.')
+    args = parser.parse_args()
 
-    # Define file paths
+    # Define file paths.
     dev_file_path = 'data/en_ewt-up-dev.conllu'
     train_file_path = 'data/en_ewt-up-train.conllu'
     test_file_path = 'data/en_ewt-up-test.conllu'
 
-    # Preprocess the data
-    start_time = print_process("preprocessing")
-    dev_data = preprocess_data(dev_file_path)
-    train_data = preprocess_data(train_file_path)
-    test_data = preprocess_data(test_file_path)
-    print_process("preprocessing", start_time)
+    # By default, the program preprocesses the data, extracts features and stores the data.
+    if not args.use_cached:
+        print("Not using cached files. Preprocessing, extracting features and storing data...\n")
 
-    # Download the model and assign to variable
-    start_time = print_process("loading language model")
-    model = api.load("glove-wiki-gigaword-200")   ### as seen at https://github.com/piskvorky/gensim-data on 21st Feb 2024
-    print_process("loading language model", start_time)
+        # Preprocess the data.
+        start_time = print_process("preprocessing")
+        dev_data = preprocess_data(dev_file_path)
+        train_data = preprocess_data(train_file_path)
+        test_data = preprocess_data(test_file_path)
+        print_process("preprocessing", start_time)
 
-    # Extract features from the data
-    start_time = print_process("extracting features")
-    extract_features(dev_data,model)
-    extract_features(train_data,model)
-    extract_features(test_data,model)
-    print_process("extracting features", start_time)
-        
+        # Download the model and assign to variable.
+        start_time = print_process("loading language model")
+        model = api.load("glove-wiki-gigaword-200")   ### as seen at https://github.com/piskvorky/gensim-data on 21st Feb 2024
+        print_process("loading language model", start_time)
+
+        # Extract features from the data.
+        start_time = print_process("extracting features")
+        extract_features(dev_data,model)
+        extract_features(train_data,model)
+        extract_features(test_data,model)
+        print_process("extracting features", start_time)
+
+        # Store all preprocesed data with extracted features as JSON.
+        start_time = print_process("storing data with extracted features as Pickle")
+        save_data(dev_data, dev_file_path)
+        save_data(train_data, train_file_path)
+        save_data(test_data, test_file_path)
+        print_process("storing data with extracted features as Pickle", start_time)
+
+    # If --use-cached is set, load the preprocessed data with extracted features with Pickle.
+    else:
+        start_time = print_process("loading data with extracted features with Pickle")
+        dev_data = load_data(dev_file_path)
+        train_data = load_data(train_file_path)
+        test_data = load_data(test_file_path)
+        print_process("loading data with extracted features with Pickle", start_time)
+
+    # Print the first sentence of the dev data to check if the data is loaded correctly.
+    for token in dev_data[0]:
+        print(token)
+
     # Train the model
     start_time = print_process("training")
     model = train_model(train_data)
