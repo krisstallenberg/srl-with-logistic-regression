@@ -52,9 +52,11 @@ def extract_dependency_path(sentence):
             if dep_path:
                 features.append('->'.join(dep_path))
 
+            # If the current word is the root, its dependency path is '_'
             else:
-
                 features.append('_')
+
+        # If the current word is the predicate, its dependency path is '_'
         else:
             features.append('_')
 
