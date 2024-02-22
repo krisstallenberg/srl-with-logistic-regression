@@ -3,12 +3,10 @@ import pandas as pd
 
 def extract_UPOS_of_head(sentence):
     """
-    Extract the token position related to predicate.
+    Extract UPOS of head of each word in a sentence.
     
     Return:
-        Before: if token is before predicate in sentence
-        After: if token is after predicate in sentence
-        _: if token is predicate itself
+        A list of UPOS of head of each word.
 
     sentence (dict): The sentence object
     """
