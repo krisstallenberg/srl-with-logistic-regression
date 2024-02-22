@@ -2,9 +2,9 @@
 import time
 import sys
 sys.path.append('feature_extraction')
-#from extract_embedding import extract_embedding
 from extract_we_lemmas import extract_embedding_lemma
 from extract_pos_token import extract_pos_token
+from extract_embedding import extract_embedding
 import pandas as pd
 import gensim.downloader as api
 
@@ -86,14 +86,19 @@ def preprocess_data(file_path):
     # Iterate over all sentences. Create copies of sentences for each predicate.
     expanded_sentences = []
     for sentence in sentences:
-        # Count how many predicates are in the sentence.
-        num_predicates = len([token['predicate'] for token in sentence if token['predicate'] != '_'])
+        # Find all predicates in the sentence.
+        predicates = [token['predicate'] for token in sentence if token['predicate'] != '_']
         
-        # for every predicate, create a copy of the sentence and replace the argument with the argument at the current index.
-        for arg_index in range(num_predicates):
+        # for every predicate, create a copy of the sentence.
+        for index, predicate in enumerate(predicates):
             sentence_copy = [token.copy() for token in sentence]
             for token in sentence_copy:
-                token['argument'] = token['argument'][arg_index]
+                # Keep only this predicate.
+                if token['predicate'] != predicate:
+                    token['predicate'] = '_'
+          
+                # Keep only the relevant argument for this predicate.
+                token['argument'] = token['argument'][index]
             expanded_sentences.append(sentence_copy)
 
     return expanded_sentences
