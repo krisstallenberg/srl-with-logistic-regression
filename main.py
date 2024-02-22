@@ -30,7 +30,7 @@ def extract_features(data,model):
 
         WE_head_emb = get_head_lemma(sentence, model)
         for token, WE_head_embedding in zip(sentence, WE_head_emb):
-            token['features']['embedding_head'] = WE_head_embeding
+            token['features']['embedding_head'] = WE_head_embedding
 
         num_of_children = how_many_children(sentence)
         for token, num_of_child in zip(sentence, num_of_children):
