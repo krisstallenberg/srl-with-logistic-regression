@@ -10,6 +10,7 @@ from extract_punct_data import am_i_punct
 from extract_pos_head import extract_UPOS_of_head
 from extract_dependency_path import extract_dependency_path
 from extract_cosine_similarity_w_predicate import extract_cosine_similarity_w_predicate
+from extract_ner import extract_ner
 import pandas as pd
 import gensim.downloader as api
 
@@ -22,12 +23,12 @@ def extract_features(data,model):
         for token, embedding in zip(sentence, embeddings):
             token['features']['embedding'] = embedding
 
-        pos_token = extract_pos_token(sentence)
-        for token, pos in zip(sentence, pos_token):
+        pos_tokens = extract_pos_token(sentence)
+        for token, pos in zip(sentence, pos_tokens):
             token['features']['pos'] = pos
 
-        position_rel2pred = extract_word_position_related_to_predicate(sentence)
-        for token, pos_rel2pred in zip(sentence, position_rel2pred):
+        positions_rel2pred = extract_word_position_related_to_predicate(sentence)
+        for token, pos_rel2pred in zip(sentence, positions_rel2pred):
             token['features']['position_rel2pred'] = pos_rel2pred
 
         WE_head_emb = get_head_lemma(sentence, model)
@@ -45,13 +46,17 @@ def extract_features(data,model):
         for token, head_pos in zip(sentence, h_pos):
             token['features']['head_pos'] = head_pos
 
-        d_path = extract_dependency_path(sentence)
-        for token, dep_path in zip(sentence, d_path):
+        d_paths = extract_dependency_path(sentence)
+        for token, dep_path in zip(sentence, d_paths):
             token['features']['dep_path'] = dep_path
-            
-        cosine_similarity_w_predicate = extract_cosine_similarity_w_predicate(sentence, model)
-        for token, cosine_sim in zip(sentence, cosine_similarity_w_predicate):
+
+        cosine_similarities_w_predicate = extract_cosine_similarity_w_predicate(sentence, model)
+        for token, cosine_sim in zip(sentence, cosine_similarities_w_predicate):
             token['features']['cosine_similarity_w_predicate'] = cosine_sim
+
+        ner_tags = extract_ner(sentence)
+        for token, ner_tag in zip(sentence, ner_tags):
+            token['features']['ner'] = ner_tag
 
     return data
 
@@ -130,8 +135,9 @@ def preprocess_data(file_path):
                 if token['predicate'] != predicate:
                     token['predicate'] = '_'
 
-                # Keep only the relevant argument for this predicate.
-                token['argument'] = token['argument'][index]
+                # Keep only the relevant argument for this predicate. Overwrite 'V' with '_'.
+                token['argument'] = token['argument'][index] if token['argument'][index] != 'V' else '_'
+
             expanded_sentences.append(sentence_copy)
 
     return expanded_sentences
@@ -177,7 +183,7 @@ def main():
     test_data = preprocess_data(test_file_path)
     print_process("preprocessing", start_time)
 
-    # downloading the model and returning as object ready for use
+    # Download the model and assign to variable
     start_time = print_process("loading language model")
     model = api.load("glove-wiki-gigaword-200")   ### as seen at https://github.com/piskvorky/gensim-data on 21st Feb 2024
     print_process("loading language model", start_time)
@@ -189,6 +195,13 @@ def main():
     extract_features(test_data,model)
     print_process("extracting features", start_time)
 
+    # Print the first sentence to see the result
+    for sentence in dev_data[:10]:
+        for token in sentence:
+            for key, value in token.items():
+                print(f"{key}: {value}")
+            print("\n")
+        
     # Train the model
     start_time = print_process("training")
     model = train_model(train_data)
