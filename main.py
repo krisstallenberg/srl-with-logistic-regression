@@ -4,6 +4,8 @@ sys.path.append('feature_extraction')
 from extract_we_lemmas import extract_embedding_lemma
 from extract_pos_token import extract_pos_token
 from extract_position_rel2pred import extract_word_position_related_to_predicate
+from extract_pos_head import extract_UPOS_of_head
+from extract_dependency_path import extract_dependency_path
 import pandas as pd
 import gensim.downloader as api
 
@@ -23,6 +25,14 @@ def extract_features(data,model):
         position_rel2pred = extract_word_position_related_to_predicate(sentence)
         for token, pos_rel2pred in zip(sentence, position_rel2pred):
             token['features']['position_rel2pred'] = pos_rel2pred
+
+        h_pos = extract_UPOS_of_head(sentence)
+        for token, head_pos in zip(sentence, h_pos):
+            token['features']['head_pos'] = head_pos
+
+        d_path = extract_dependency_path(sentence)
+        for token, dep_path in zip(sentence, d_path):
+            token['features']['dep_path'] = dep_path
 
     return data
 
