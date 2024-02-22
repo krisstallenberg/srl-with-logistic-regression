@@ -7,7 +7,9 @@ from extract_position_rel2pred import extract_word_position_related_to_predicate
 from extract_lemma_head_WE import get_head_lemma
 from extract_num_children import how_many_children
 from extract_punct_data import am_i_punct
-
+from extract_pos_head import extract_UPOS_of_head
+from extract_dependency_path import extract_dependency_path
+from extract_cosine_similarity_w_predicate import extract_cosine_similarity_w_predicate
 import pandas as pd
 import gensim.downloader as api
 
@@ -39,6 +41,17 @@ def extract_features(data,model):
         list_punct = am_i_punct(sentence)
         for token, puncts in zip(sentence, list_of_punct):
             token['features']['punct'] = puncts
+        h_pos = extract_UPOS_of_head(sentence)
+        for token, head_pos in zip(sentence, h_pos):
+            token['features']['head_pos'] = head_pos
+
+        d_path = extract_dependency_path(sentence)
+        for token, dep_path in zip(sentence, d_path):
+            token['features']['dep_path'] = dep_path
+            
+        cosine_similarity_w_predicate = extract_cosine_similarity_w_predicate(sentence, model)
+        for token, cosine_sim in zip(sentence, cosine_similarity_w_predicate):
+            token['features']['cosine_similarity_w_predicate'] = cosine_sim
 
     return data
 
@@ -50,6 +63,7 @@ def infer_model(model, data):
 
 def preprocess_data(file_path):
     """
+    Parses the CoNNL-U Plus file and returns a list of sentences.
     Extract features from the data and return a list of objects.
 
     Returns a list of objects, where each object represents one 'frame' in a sentence.
