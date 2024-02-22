@@ -4,19 +4,13 @@ sys.path.append('feature_extraction')
 from extract_we_lemmas import extract_embedding_lemma
 from extract_pos_token import extract_pos_token
 from extract_position_rel2pred import extract_word_position_related_to_predicate
-from extract_lemma_head_WE import get_head_lemma
-from extract_num_children import how_many_children
-from extract_punct_data import am_i_punct
-from extract_pos_head import extract_UPOS_of_head
-from extract_dependency_path import extract_dependency_path
-from extract_cosine_similarity_w_predicate import extract_cosine_similarity_w_predicate
 import pandas as pd
 import gensim.downloader as api
 
 
 def extract_features(data,model):
     for sentence in data:
-
+        
         # For every extraction function, add these three lines, adjust the feature name and the function call accordingly ;)
         embeddings = extract_embedding_lemma(sentence,model)
         for token, embedding in zip(sentence, embeddings):
@@ -30,29 +24,6 @@ def extract_features(data,model):
         for token, pos_rel2pred in zip(sentence, position_rel2pred):
             token['features']['position_rel2pred'] = pos_rel2pred
 
-        WE_head_emb = get_head_lemma(sentence, model)
-        for token, WE_head_embedding in zip(sentence, WE_head_emb):
-            token['features']['embedding_head'] = WE_head_embedding
-
-        num_of_children = how_many_children(sentence)
-        for token, num_of_child in zip(sentence, num_of_children):
-            token['features']['num_of_children'] = num_of_child
-
-        list_punct = am_i_punct(sentence)
-        for token, puncts in zip(sentence, list_of_punct):
-            token['features']['punct'] = puncts
-        h_pos = extract_UPOS_of_head(sentence)
-        for token, head_pos in zip(sentence, h_pos):
-            token['features']['head_pos'] = head_pos
-
-        d_path = extract_dependency_path(sentence)
-        for token, dep_path in zip(sentence, d_path):
-            token['features']['dep_path'] = dep_path
-            
-        cosine_similarity_w_predicate = extract_cosine_similarity_w_predicate(sentence, model)
-        for token, cosine_sim in zip(sentence, cosine_similarity_w_predicate):
-            token['features']['cosine_similarity_w_predicate'] = cosine_sim
-
     return data
 
 def train_model(data):
@@ -63,7 +34,6 @@ def infer_model(model, data):
 
 def preprocess_data(file_path):
     """
-    Parses the CoNNL-U Plus file and returns a list of sentences.
     Extract features from the data and return a list of objects.
 
     Returns a list of objects, where each object represents one 'frame' in a sentence.
@@ -88,7 +58,7 @@ def preprocess_data(file_path):
                     # Check if the split result is valid, if it is, add it to the dictionary
                     if len(key_value_pair) == 2:
                         key, value = key_value_pair
-                        features[key] = value
+                        features[key] = value 
 
                 # Create a token if its ID does not contain a period
                 if '.' not in line[0] and len(line) > 10:
@@ -109,7 +79,7 @@ def preprocess_data(file_path):
                     # Append the token to the sentence.
                     sentence.append(token)
 
-            # A new line indicates the end of a sentence.
+            # A new line indicates the end of a sentence. 
             elif line[0].strip() == '':
                 # Append the completed sentence to the sentences list.
                 sentences.append(sentence)
@@ -121,7 +91,7 @@ def preprocess_data(file_path):
     for sentence in sentences:
         # Find all predicates in the sentence.
         predicates = [token['predicate'] for token in sentence if token['predicate'] != '_']
-
+        
         # for every predicate, create a copy of the sentence.
         for index, predicate in enumerate(predicates):
             sentence_copy = [token.copy() for token in sentence]
@@ -129,7 +99,7 @@ def preprocess_data(file_path):
                 # Keep only this predicate.
                 if token['predicate'] != predicate:
                     token['predicate'] = '_'
-
+          
                 # Keep only the relevant argument for this predicate.
                 token['argument'] = token['argument'][index]
             expanded_sentences.append(sentence_copy)
@@ -164,12 +134,12 @@ def main():
     2. Train a model
     3. Evaluate the model
     """
-
+    
     # Define file paths
     dev_file_path = 'data/en_ewt-up-dev.conllu'
     train_file_path = 'data/en_ewt-up-train.conllu'
     test_file_path = 'data/en_ewt-up-test.conllu'
-
+    
     # Preprocess the data
     start_time = print_process("preprocessing")
     dev_data = preprocess_data(dev_file_path)
