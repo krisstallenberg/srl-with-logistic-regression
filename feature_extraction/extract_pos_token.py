@@ -2,7 +2,7 @@ def extract_pos_token(sentence):
     """
     Extract the POS tag of each token in the sentence.
 
-    Returns a list of the tokens contained in a sentence.
+    Returns a list of the POS of tokens contained in a sentence.
 
     sentence (dict): a Python dictionary containing all the columns from CoNLLu file for each token.
     """
