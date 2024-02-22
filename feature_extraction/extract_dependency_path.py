@@ -50,7 +50,7 @@ def extract_dependency_path(sentence):
         if word['form'] != sentence[int(pred_id)]['form']:
             dep_path = find_dependency_path(word['id'], sentence,pred_id)
             if dep_path:
-                features.append('->'.join(dep_path))
+                features.append(dep_path)
 
             # If the current word is the root, its dependency path is '_'
             else:
