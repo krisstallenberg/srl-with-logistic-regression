@@ -3,8 +3,10 @@ import time
 import sys
 sys.path.append('feature_extraction')
 #from extract_embedding import extract_embedding
-from extract_we_lemma import extract_embedding_lemma
+from extract_we_lemmas import extract_embedding_lemma
+from extract_pos_token import extract_pos_token
 import pandas as pd
+import gensim.downloader as api
 
 
 def extract_features(data,model):
@@ -14,6 +16,10 @@ def extract_features(data,model):
         embeddings = extract_embedding_lemma(sentence,model)
         for token, embedding in zip(sentence, embeddings):
             token['features']['embedding'] = embedding
+
+        pos_token = extract_pos_token(sentence)
+        for token, pos in zip(sentence, pos_token):
+            token['features']['pos'] = pos
 
     return data
 
@@ -140,9 +146,9 @@ def main():
 
     # Extract features from the data
     start_time = print_process("extracting features")
-    extract_features(dev_data)
-    extract_features(train_data)
-    extract_features(test_data)
+    extract_features(dev_data,model)
+    extract_features(train_data,model)
+    extract_features(test_data,model)
     print_process("extracting features", start_time)
 
     # Train the model

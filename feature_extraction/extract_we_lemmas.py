@@ -4,7 +4,8 @@ def extract_embedding_lemma(sentence,model):
     """
     Extract the embedding of the lemma for each token in the sentence.
 
-    Returns a list of embedding vectors of the lemmatized tokens contained in a sentence.
+    Returns a list of embedding vectors of the lemmatized tokens contained in a sentence,
+    if the token is not in the model vocabulary, an array of zeros will be appended.
 
     sentence (dict): a Python dictionary containing all the columns from CoNLLu file for each token.
     model: the loaded pretrained word embedding model (word2vec 200 dim).
@@ -17,6 +18,6 @@ def extract_embedding_lemma(sentence,model):
         if dict['lemma'] in model:
             embedding_lemma.append(model[dict['lemma']])
         else:
-            embedding_lemma.append(np.array([0.0] * 300))
+            embedding_lemma.append(np.array([0.0] * 200))
 
     return embedding_lemma
