@@ -194,13 +194,6 @@ def main():
     extract_features(train_data,model)
     extract_features(test_data,model)
     print_process("extracting features", start_time)
-
-    # Print the first sentence to see the result
-    for sentence in dev_data[:10]:
-        for token in sentence:
-            for key, value in token.items():
-                print(f"{key}: {value}")
-            print("\n")
         
     # Train the model
     start_time = print_process("training")
