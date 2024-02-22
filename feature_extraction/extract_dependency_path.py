@@ -14,7 +14,7 @@ def find_dependency_path(token_id, sentence,pred_id ):
     """
     dep_path = []
     current_id = token_id
-    # Starts from token_id and each time 'form' and 'UPOS' of that token is added to dependency path list.
+    # Starts from token_id and each time 'form' and 'XPOS' of that token is added to dependency path list.
     # Then, token becomes head of the current token. It continues until head is the predicate.
     while current_id != 0:
         if int(current_id)-1 == 0:
