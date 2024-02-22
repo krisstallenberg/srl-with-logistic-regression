@@ -1,5 +1,7 @@
 import time
 import sys
+import pandas as pd
+import gensim.downloader as api
 sys.path.append('feature_extraction')
 from extract_we_lemmas import extract_embedding_lemma
 from extract_pos_token import extract_pos_token
@@ -10,10 +12,11 @@ from extract_punct_data import am_i_punct
 from extract_pos_head import extract_UPOS_of_head
 from extract_dependency_path import extract_dependency_path
 from extract_cosine_similarity_w_predicate import extract_cosine_similarity_w_predicate
+from extract_morph_features_prev_token import previous_token_morph_features
+from extract_morph_features_next_token import extract_next_token_morph_features
+from extract_pos_with_misc_spacing import pos_misc_feature
+from extract_head_of_pp import head_word_of_pp 
 from extract_ner import extract_ner
-import pandas as pd
-import gensim.downloader as api
-
 
 def extract_features(data,model):
     for sentence in data:
@@ -53,6 +56,22 @@ def extract_features(data,model):
         cosine_similarities_w_predicate = extract_cosine_similarity_w_predicate(sentence, model)
         for token, cosine_sim in zip(sentence, cosine_similarities_w_predicate):
             token['features']['cosine_similarity_w_predicate'] = cosine_sim
+
+        prev_token_morph_features = extract_morph_features_prev_token(sentence)
+        for token, morph_features in zip(sentence, prev_token_morph_features):
+            token['features']['prev_token_morph_features'] = morph_features
+            
+        next_token_morph_features = extract_next_token_morph_features(sentence)
+        for token, morph_features in zip(sentence, next_token_morph_features):
+            token['features']['next_token_morph_features'] = morph_features
+
+        pos_misc_features = pos_misc_feature(sentence)
+        for token, pos_misc in zip(sentence, pos_misc_features):
+            token['features']['pos_misc_feature'] = pos_misc
+
+        head_pp_features = head_word_of_pp(sentence)
+        for token, head_pp_feature in zip(sentence, head_pp_features):
+            token['features']['head_pp_feature'] = head_pp_feature
 
         ner_tags = extract_ner(sentence)
         for token, ner_tag in zip(sentence, ner_tags):
