@@ -1,10 +1,9 @@
-# Import /feature_extraction/extract_embedding.py
 import time
 import sys
 sys.path.append('feature_extraction')
 from extract_we_lemmas import extract_embedding_lemma
 from extract_pos_token import extract_pos_token
-from extract_embedding import extract_embedding
+from extract_position_rel2pred import extract_word_position_related_to_predicate
 import pandas as pd
 import gensim.downloader as api
 
@@ -20,6 +19,10 @@ def extract_features(data,model):
         pos_token = extract_pos_token(sentence)
         for token, pos in zip(sentence, pos_token):
             token['features']['pos'] = pos
+
+        position_rel2pred = extract_word_position_related_to_predicate(sentence)
+        for token, pos_rel2pred in zip(sentence, position_rel2pred):
+            token['features']['position_rel2pred'] = pos_rel2pred
 
     return data
 
