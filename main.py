@@ -79,6 +79,7 @@ def extract_features(data,model):
         head_pp_features = head_word_of_pp(sentence)
         for token, head_pp_feature in zip(sentence, head_pp_features):
             token['features']['head_pp_feature'] = head_pp_feature
+    
 
         ner_tags = extract_ner(sentence)
         for token, ner_tag in zip(sentence, ner_tags):
