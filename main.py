@@ -93,7 +93,8 @@ def train_model(data):
     pass
 
 def infer_model(model, data):
-    predicts = model.predict(data)
+    # data_without_gold = ??? data
+    predicts = model.predict(data_without_gold)
     evaluation_model(data,predicts)
     
 
