@@ -19,6 +19,7 @@ from extract_morph_features_next_token import extract_next_token_morph_features
 from extract_pos_with_misc_spacing import pos_misc_feature
 from extract_head_of_pp import head_word_of_pp 
 from extract_ner import extract_ner
+from extract_propbank_possible_roles import extract_propbank_args
 
 def extract_features(data,model):
     for sentence in data:
@@ -79,6 +80,10 @@ def extract_features(data,model):
         ner_tags = extract_ner(sentence)
         for token, ner_tag in zip(sentence, ner_tags):
             token['features']['ner'] = ner_tag
+
+        propbank_args = extract_propbank_args(sentence)
+        for token, propbank_arg in zip(sentence, propbank_args):
+            token['features']['propbank_arg'] = propbank_arg
 
     return data
 
