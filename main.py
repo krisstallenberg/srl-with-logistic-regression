@@ -20,6 +20,8 @@ from extract_pos_with_misc_spacing import pos_misc_feature
 from extract_head_of_pp import head_word_of_pp 
 from extract_ner import extract_ner
 from extract_propbank_possible_roles import extract_propbank_args
+from evaluation import evaluation_model
+
 
 def extract_features(data,model):
     for sentence in data:
@@ -91,7 +93,9 @@ def train_model(data):
     pass
 
 def infer_model(model, data):
-    pass
+    predicts = model.predict(data)
+    evaluation_model(data,predicts)
+    
 
 def preprocess_data(file_path):
     """
