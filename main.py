@@ -55,13 +55,8 @@ def extract_features(data,model):
         for token, dep_path in zip(sentence, d_paths):
             token['features']['dep_path'] = dep_path
 
-<<<<<<< HEAD
-        cosine_similarities_w_predicate = extract_cosine_similarity_w_predicate(sentence, model)
-        for token, cosine_sim in zip(sentence, cosine_similarities_w_predicate):
-=======
         cosine_similarity_w_predicate = extract_cosine_similarity_w_predicate(sentence, model)
         for token, cosine_sim in zip(sentence, cosine_similarity_w_predicate):
->>>>>>> 1ccfddc (Updated function  for lemma WE)
             token['features']['cosine_similarity_w_predicate'] = cosine_sim
 
         prev_token_morph_features = extract_morph_features_prev_token(sentence)
