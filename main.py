@@ -60,13 +60,13 @@ def extract_features(data,model):
         for token, cosine_sim in zip(sentence, cosine_similarity_w_predicate):
             token['features']['cosine_similarity_w_predicate'] = cosine_sim
 
-        prev_token_morph_features = previous_token_morph_features(sentence) 
-        for token, morph_features in zip(sentence, prev_token_morph_features):
-            token['features']['prev_token_morph_features'] = morph_features
+        #prev_token_morph_features = previous_token_morph_features(sentence) 
+        #for token, morph_features in zip(sentence, prev_token_morph_features):
+        #    token['features']['prev_token_morph_features'] = morph_features
             
-        next_token_morph_features = extract_next_token_morph_features(sentence)
-        for token, morph_features in zip(sentence, next_token_morph_features):
-            token['features']['next_token_morph_features'] = morph_features
+        #next_token_morph_features = extract_next_token_morph_features(sentence)
+        #for token, morph_features in zip(sentence, next_token_morph_features):
+        #    token['features']['next_token_morph_features'] = morph_features
 
         pos_misc_features = pos_misc_feature(sentence)
         for token, pos_misc in zip(sentence, pos_misc_features):
