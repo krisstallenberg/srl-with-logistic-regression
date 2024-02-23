@@ -1,3 +1,6 @@
 feature_extraction/__pycache__/*
 .DS_Store
 .ipynb_checkpoints
+data/en_ewt-up-dev.preprocessed.pkl
+data/en_ewt-up-test.preprocessed.pkl
+data/en_ewt-up-train.preprocessed.pkl
