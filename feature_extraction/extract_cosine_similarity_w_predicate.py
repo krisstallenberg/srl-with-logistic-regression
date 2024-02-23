@@ -30,6 +30,6 @@ def extract_cosine_similarity_w_predicate(sentence, model):
             word_lemma_vector = [0.0] * 200
 
         # Calculate the cosine similarity between the predicate and the word, and append it to features
-        features.append(cosine_similarity([predicate_lemma_vector], [word_lemma_vector]))
+        features.append(cosine_similarity([predicate_lemma_vector], [word_lemma_vector])[0][0])
 
     return features
