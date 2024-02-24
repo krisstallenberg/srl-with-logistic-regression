@@ -1,6 +1,5 @@
 # I used 'provide_confusion_matrix' , 'calculate_precision_recall_f1score' , 'evaluation_model' functions from previous term
-# But I add 'extract_golds_from_data' to pull out Gold labels from input data for this task
-
+from matplotlib import pyplot as plt
 from sklearn.metrics import classification_report, ConfusionMatrixDisplay, confusion_matrix
 
 def provide_confusion_matrix(GoldLabel, PredictLabel, label_set):
