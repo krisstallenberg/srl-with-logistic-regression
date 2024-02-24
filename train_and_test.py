@@ -45,4 +45,20 @@ def train_model(train_data):
 	model = logreg.fit(X_transformed, train_golds)
 	
 	return model, vec
+
+def test_model(test_data, model, vec):
 	
+	test_df = pd.DataFrame(get_all_sentences(test_data))
+	
+	test_df = test_df.drop(columns=['id','features', 'Definite', 'PronType', 'Number', 'Mood','Person', 'Tense', 'VerbForm','head','dependency_graph',
+								  'miscellaneous','head_pp_feature','prev_token_morph_features', 'next_token_morph_features','embedding_head', 'punct_extracted',
+								  'NumType','Degree', 'Case', 'Gender', 'Poss', 'Voice', 'Foreign', 'Reflex', 'Typo','num_of_children','Abbr','propbank_arg'])
+
+	test_golds = test_df['argument'].copy()
+	test_df= test_df.drop(columns =['argument'])
+	
+	test_data_dict  = df_to_dict (test_df)
+	X_transformed = vec.transform(test_data_dict)
+	predicts = model.predict(X_transformed)
+	
+	return predicts, test_golds
