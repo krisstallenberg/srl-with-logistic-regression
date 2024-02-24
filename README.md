@@ -80,6 +80,13 @@ The model applied for SRL argument identification and classification is a logist
 
 When training the model, the preprocessed file is stored under the data subdirectory with pickle which can be loaded again for testing.
 
+## Contributors
+
+Farnaz Bani Fatemi
+Ariana Britez
+Christina Karavida
+Szabolcs Pál
+Kris Stallenberg
               
 
 
