@@ -24,6 +24,7 @@ pip install -r requirements.txt
 - main.py: main script for preprocessing, training, and inference.
 
 Scripts provided called in the main function:
+- train_and_test.py: functions that needed to training and test (prediction) model. 
 - evaluation.py contains functions for evaluating the model's performance.
 - feature_extraction/: directory containing scripts for feature extraction.
 
