@@ -82,10 +82,10 @@ When training the model, the preprocessed file is stored under the data subdirec
 
 ## Contributors
 
-Farnaz Bani Fatemi
-Ariana Britez
-Christina Karavida
-Szabolcs Pál
+Farnaz Bani Fatemi \
+Ariana Britez \
+Christina Karavida \
+Szabolcs Pál \
 Kris Stallenberg
               
 
