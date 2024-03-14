@@ -242,7 +242,7 @@ def train_model(train_data):
 	
     dense_feature_representations,vec = extract_features(train_data)
     gold = extract_gold_labels(train_data)
-    model = create_classifier(dense_feature_representations, gold)
+    model = create_classifier(dense_feature_representations[:1000], gold[:1000])
     
     return model, vec
 
