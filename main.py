@@ -20,13 +20,20 @@ from extract_pos_with_misc_spacing import pos_misc_feature
 from extract_head_of_pp import head_word_of_pp 
 from extract_ner import extract_ner
 from extract_propbank_possible_roles import extract_propbank_args
+from extract_current_morph import extract_current_morph, find_all_morph_features
 from evaluation import evaluation_model
 from train_and_test import train_model, test_model
 
 def extract_features(data,model):
+
+	morph_features_dict = find_all_morph_features(data)
+
 	for sentence in data:
 
-		# For every extraction function, add these three lines, adjust the feature name and the function call accordingly ;)
+		features_from_dataset = extract_current_morph(sentence, morph_features_dict)
+		for token, morph_features_list in zip(sentence, features_from_dataset):
+			token['features']['morph_features'] = morph_features_list
+
 		embeddings = extract_embedding_lemma(sentence,model)
 		for token, embedding in zip(sentence, embeddings):
 			token['features']['embedding'] = embedding
