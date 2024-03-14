@@ -65,5 +65,5 @@ def extract_current_morph(sentence, dict_morph):
                     token_features.append(0)
 
         # Append the list of this token's features to the list of lists.
-        feature.append(token_features)
+        features.append(token_features)
     return features
