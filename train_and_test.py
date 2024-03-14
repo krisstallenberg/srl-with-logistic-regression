@@ -29,18 +29,19 @@ def prepare_for_model(data):
 
     #selecting the features that are needed for the model, which are now columns in the df
     df = df[['embedding', 
-         'pos_extracted', 
-         'position_rel2pred',
-         'embedding_head',
-         'num_of_children',
-         'punct_extracted',
-         'head_pos',
-         'dep_path',
-         'cosine_similarity_w_predicate',
-        'pos_misc_feature',
-        'head_pp_feature',
-        'ner',
-        'propbank_arg']] 
+             'pos_extracted', 
+             'position_rel2pred',
+             'embedding_head',
+             'num_of_children',
+             'punct_extracted',
+             'head_pos',
+             'dep_path',
+             'cosine_similarity_w_predicate',
+             'pos_misc_feature',
+             'head_pp_feature',
+             'ner',
+             'propbank_arg',
+             'predicate']] 
 
     return df
 
@@ -98,7 +99,9 @@ def extract_feature_values(row_dict, selected_features):
                         'pos_misc_feature': 9,
                         'head_pp_feature': 10,
                         'ner': 11, 
-                        'propbank_arg': 12}
+                        'propbank_arg': 12,
+                        'predicate':13
+                       }
     
     feature_values_dict = {}
     for feature_name in selected_features:
@@ -159,14 +162,15 @@ def extract_features(data_file, vectorizer=None):
     dense_vectors = []
     traditional_features = []
 
-    selected_features = [ 
-                     'pos_extracted',
-                     'position_rel2pred',
-                     'head_pos',
-                     'dep_path',
-                     'pos_misc_feature',
-                     'ner',
-                    ] 
+    selected_features = [
+        'pos_extracted',
+        'position_rel2pred',
+        'head_pos',
+        'dep_path',
+        'pos_misc_feature',
+        'ner',
+        'predicate'
+    ] 
     
     df = prepare_for_model(data_file) #extracting the features necessary from the data file by converting to a pandas df
     features_dict_list = df_to_dict(df) #converting the df back to dictionaries to extract the features and convert to vector representation
