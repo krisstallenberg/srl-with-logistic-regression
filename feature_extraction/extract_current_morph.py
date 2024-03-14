@@ -33,7 +33,7 @@ def find_all_morph_features(data):
     return morphological_markers
 
 
-def extract_morph_new(sentence, dict_morph):
+def extract_current_morph(sentence, dict_morph):
     """
     Creates a one-hot encoding for all possible key-value pairs of morphological features.
 
