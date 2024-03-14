@@ -63,6 +63,10 @@ def extract_current_morph(sentence, dict_morph):
                     token_features.append(1)
                 else:
                     token_features.append(0)
+        
+        # If the token has no features, add a list of 0s to the list of lists.
+        if len(token_features) == 0:
+            token_features = [0] * len(dict_morph)
 
         # Append the list of this token's features to the list of lists.
         features.append(token_features)
