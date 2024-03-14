@@ -14,6 +14,8 @@ from extract_punct_data import am_i_punct
 from extract_pos_head import extract_UPOS_of_head
 from extract_dependency_path import extract_dependency_path
 from extract_cosine_similarity_w_predicate import extract_cosine_similarity_w_predicate
+from extract_morph_features_prev_token import previous_token_morph_features
+from extract_morph_features_next_token import extract_next_token_morph_features
 from extract_pos_with_misc_spacing import pos_misc_feature
 from extract_head_of_pp import head_word_of_pp 
 from extract_ner import extract_ner
@@ -60,6 +62,14 @@ def extract_features(data,model):
 		cosine_similarity_w_predicate = extract_cosine_similarity_w_predicate(sentence, model)
 		for token, cosine_sim in zip(sentence, cosine_similarity_w_predicate):
 			token['features']['cosine_similarity_w_predicate'] = cosine_sim
+
+		prev_token_morph_features = previous_token_morph_features(sentence) 
+		for token, morph_features in zip(sentence, prev_token_morph_features):
+			token['features']['prev_token_morph_features'] = morph_features
+			
+		next_token_morph_features = extract_next_token_morph_features(sentence)
+		for token, morph_features in zip(sentence, next_token_morph_features):
+			token['features']['next_token_morph_features'] = morph_features
 
 		pos_misc_features = pos_misc_feature(sentence)
 		for token, pos_misc in zip(sentence, pos_misc_features):
@@ -152,10 +162,12 @@ def preprocess_data(file_path):
 				if token['predicate'] != predicate:
 					token['predicate'] = '_'
 
-				# Keep only the relevant argument for this predicate. Overwrite 'V' with '_'.
-				token['argument'] = token['argument'][index] if token['argument'][index] != 'V' else '_'
+				# Keep only the relevant argument for this predicate. Overwrite 'V' and 'C-V' with '_'.
+				token['argument'] = '_' if token['argument'][index] in ['V', 'C-V'] else token['argument'][index]
 
-			expanded_sentences.append(sentence_copy)
+			# Append only sentences with arguments.
+			if any(token['argument'] != '_' for token in sentence_copy):	
+				expanded_sentences.append(sentence_copy)
 
 	return expanded_sentences
 
@@ -252,14 +264,14 @@ def main():
 	# Train the model
 	start_time = print_process("training")
 	model, vec= train_model(train_data)
-	print_process("training",start_time)
+	print_process("training", start_time)
 
 	# Predict with model
 	start_time = print_process("Predict")
 	results, golds = test_model(test_data,model,vec)
 	print_process("Predict", start_time)
 
-    # evaluation the model
+	# evaluation the model
 	start_time = print_process("evaluation")
 	evaluation_model(golds, results)
 	print_process("evaluation", start_time)
