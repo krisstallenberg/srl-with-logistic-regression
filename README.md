@@ -49,7 +49,7 @@ In order to run successfully run the code, the datasets have to be placed in the
 
 During preprocessing, the sentences that contain more than one predicate are multiplied according to the number of predicates found.
 
-To perform argument identification and classification for SRL, a predicate is essential. Therefore, the sentences that do not contain a predicate are discarded.
+To perform argument identification and classification for SRL, a predicate is essential. Therefore, the sentences that do not contain a predicate are discarded. Furthermore, sentences that have no arguments other than 'V' and 'C-V' are stripped as well as 'V' and 'C-V' labels are excluded from the gold labels.
 
 ## Feature extraction
 
