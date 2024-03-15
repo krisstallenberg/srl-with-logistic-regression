@@ -7,11 +7,11 @@ The code preprocesses the dataset, extracts a set of features and trains a model
 ## Dependencies
 
 The following libraries are required for running the code:
-- pandas
-- gensim.downloader
-- nltk.corpus
-- numpy
-- spacy
+- `pandas`
+- `gensim.downloader`
+- `nltk.corpus`
+- `numpy`
+- `spacy`
 
 To run the code, make sure libraries required are installed. They are listed in the requirements.txt file.
 They can be installed with the following command:
