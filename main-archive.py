@@ -14,12 +14,13 @@ from extract_punct_data import am_i_punct
 from extract_pos_head import extract_UPOS_of_head
 from extract_dependency_path import extract_dependency_path
 from extract_cosine_similarity_w_predicate import extract_cosine_similarity_w_predicate
+from extract_morph_features_prev_token import previous_token_morph_features
+from extract_morph_features_next_token import extract_next_token_morph_features
 from extract_pos_with_misc_spacing import pos_misc_feature
 from extract_head_of_pp import head_word_of_pp 
 from extract_ner import extract_ner
 from extract_propbank_possible_roles import extract_propbank_args
 from extract_current_morph import extract_current_morph, find_all_morph_features
-from extract_predicate import extract_predicate
 from evaluation import evaluation_model
 from train_and_test import train_model, test_model
 
@@ -69,6 +70,14 @@ def extract_features(data,model):
 		for token, cosine_sim in zip(sentence, cosine_similarity_w_predicate):
 			token['features']['cosine_similarity_w_predicate'] = cosine_sim
 
+		prev_token_morph_features = previous_token_morph_features(sentence) 
+		for token, morph_features in zip(sentence, prev_token_morph_features):
+			token['features']['prev_token_morph_features'] = morph_features
+			
+		next_token_morph_features = extract_next_token_morph_features(sentence)
+		for token, morph_features in zip(sentence, next_token_morph_features):
+			token['features']['next_token_morph_features'] = morph_features
+
 		pos_misc_features = pos_misc_feature(sentence)
 		for token, pos_misc in zip(sentence, pos_misc_features):
 			token['features']['pos_misc_feature'] = pos_misc
@@ -85,9 +94,9 @@ def extract_features(data,model):
 		for token, propbank_arg in zip(sentence, propbank_args):
 			token['features']['propbank_arg'] = propbank_arg
 
-		predicates = extract_predicate(sentence)
-		for token,predicate in zip(sentence, predicates):
-			token['features']['predicate'] = predicate
+		predicate = [token['predicate'] for token in sentence if token['predicate'] != '_']
+		for token in sentence:
+			token['features']['predicate'] = predicate[0]
 
 	return data
 
@@ -168,7 +177,6 @@ def preprocess_data(file_path):
 				expanded_sentences.append(sentence_copy)
 
 	return expanded_sentences
-
 
 
 
@@ -256,24 +264,21 @@ def main():
 		test_data = load_data(test_file_path)
 		print_process("loading data with extracted features with Pickle", start_time)
 
-	# Print first token of test data
-	for sentence in test_data:
-		for word in sentence:
-			for key, value in word.items():
-				print(f"key: {key}: value: {value}")
-			break
+	# Print the first sentence of the dev data to check if the data is loaded correctly.
+	for token in dev_data[0]:
+		print(token)
 
 	# Train the model
 	start_time = print_process("training")
 	model, vec= train_model(train_data)
-	print_process("training",start_time)
+	print_process("training", start_time)
 
 	# Predict with model
 	start_time = print_process("inferencing")
 	results, golds = test_model(test_data,model,vec)
 	print_process("inferencing", start_time)
 
-    # evaluation the model
+	# evaluation the model
 	start_time = print_process("evaluating")
 	evaluation_model(golds, results)
 	print_process("evaluating", start_time)
