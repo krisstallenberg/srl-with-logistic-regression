@@ -87,20 +87,20 @@ def extract_feature_values(row_dict, selected_features):
     
     :returns: dictionary of feature value pairs
     '''
-    feature_to_index = {'embedding': 0,
-                        'pos_extracted': 1, 
-                        'position_rel2pred': 2, 
-                        'embedding_head': 3,
-                        'num_of_children': 4, 
-                        'punct_extracted': 5, 
-                        'head_pos': 6, 
-                        'dep_path': 7,
-                        'cosine_similarity_w_predicate': 8, 
-                        'pos_misc_feature': 9,
-                        'head_pp_feature': 10,
-                        'ner': 11, 
-                        'propbank_arg': 12,
-                        'predicate':13
+    feature_to_index = {'embedding': 1,
+                        'pos_extracted': 2, 
+                        'position_rel2pred': 3, 
+                        'embedding_head': 4,
+                        'num_of_children': 5, 
+                        'punct_extracted': 6, 
+                        'head_pos': 7, 
+                        'dep_path': 8,
+                        'cosine_similarity_w_predicate': 9, 
+                        'pos_misc_feature': 10,
+                        'head_pp_feature': 11,
+                        'ner': 12, 
+                        'propbank_arg': 13,
+                        'predicate':14
                        }
     
     feature_values_dict = {}
@@ -242,7 +242,7 @@ def train_model(train_data):
 	
     dense_feature_representations,vec = extract_features(train_data)
     gold = extract_gold_labels(train_data)
-    model = create_classifier(dense_feature_representations[:1000], gold[:1000])
+    model = create_classifier(dense_feature_representations, gold)
     
     return model, vec
 

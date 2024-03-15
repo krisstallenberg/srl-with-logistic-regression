@@ -25,7 +25,6 @@ from train_and_test import train_model, test_model
 
 def extract_features(data,model):
 
-
 	morph_features_dict = find_all_morph_features(data)
 
 	for sentence in data:
@@ -257,9 +256,12 @@ def main():
 		test_data = load_data(test_file_path)
 		print_process("loading data with extracted features with Pickle", start_time)
 
-	# Print the first sentence of the dev data to check if the data is loaded correctly.
-	for token in dev_data[0]:
-		print(token)
+	# Print first token of test data
+	for sentence in test_data:
+		for word in sentence:
+			for key, value in word.items():
+				print(f"key: {key}: value: {value}")
+			break
 
 	# Train the model
 	start_time = print_process("training")
@@ -267,14 +269,14 @@ def main():
 	print_process("training",start_time)
 
 	# Predict with model
-	start_time = print_process("Predict")
+	start_time = print_process("inferencing")
 	results, golds = test_model(test_data,model,vec)
-	print_process("Predict", start_time)
+	print_process("inferencing", start_time)
 
     # evaluation the model
-	start_time = print_process("evaluation")
+	start_time = print_process("evaluating")
 	evaluation_model(golds, results)
-	print_process("evaluation", start_time)
+	print_process("evaluating", start_time)
 
 # Run main function when called from CLI
 if __name__ == "__main__":

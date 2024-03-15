@@ -274,14 +274,14 @@ def main():
 	print_process("training", start_time)
 
 	# Predict with model
-	start_time = print_process("Predict")
+	start_time = print_process("inferencing")
 	results, golds = test_model(test_data,model,vec)
-	print_process("Predict", start_time)
+	print_process("inferencing", start_time)
 
 	# evaluation the model
-	start_time = print_process("evaluation")
+	start_time = print_process("evaluating")
 	evaluation_model(golds, results)
-	print_process("evaluation", start_time)
+	print_process("evaluating", start_time)
 
 # Run main function when called from CLI
 if __name__ == "__main__":
