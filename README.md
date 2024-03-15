@@ -16,7 +16,9 @@ The following libraries are required for running the code:
 To run the code, make sure libraries required are installed. They are listed in the requirements.txt file.
 They can be installed with the following command:
 
+``` bash
 pip install -r requirements.txt
+```
 
 
 ## Code structure
