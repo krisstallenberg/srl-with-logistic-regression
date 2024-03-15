@@ -7,16 +7,18 @@ The code preprocesses the dataset, extracts a set of features and trains a model
 ## Dependencies
 
 The following libraries are required for running the code:
-- pandas
-- gensim.downloader
-- nltk.corpus
-- numpy
-- spacy
+- `pandas`
+- `gensim.downloader`
+- `nltk.corpus`
+- `numpy`
+- `spacy`
 
 To run the code, make sure libraries required are installed. They are listed in the requirements.txt file.
 They can be installed with the following command:
 
+``` bash
 pip install -r requirements.txt
+```
 
 
 ## Code structure
@@ -49,7 +51,7 @@ In order to run successfully run the code, the datasets have to be placed in the
 
 During preprocessing, the sentences that contain more than one predicate are multiplied according to the number of predicates found.
 
-To perform argument identification and classification for SRL, a predicate is essential. Therefore, the sentences that do not contain a predicate are discarded.
+To perform argument identification and classification for SRL, a predicate is essential. Therefore, the sentences that do not contain a predicate are discarded. Furthermore, sentences that have no arguments other than 'V' and 'C-V' are stripped as well as 'V' and 'C-V' labels are excluded from the gold labels.
 
 ## Feature extraction
 
